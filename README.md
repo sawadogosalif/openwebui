@@ -3,7 +3,7 @@
 1. **Clone the Repository**
    ```bash
    git clone https://github.com/sawadogosalif/openwebui.git
-   cd data-scientist-workbench
+   cd openwebui
    ```
 
 2. **Configure Environment Variables**
