@@ -3,7 +3,7 @@ version: '3.8'
 services:
   open-webui:
     pull_policy: always
-    image: ghcr.io/open-webui/open-webui:main
+    image: ghcr.io/open-webui/open-webui:main # fix versio
     container_name: open-webui
     volumes:
       - open-webui:/app/backend/data
@@ -35,6 +35,7 @@ services:
     extra_hosts:
       - host.docker.internal:host-gateway
     environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
       - PIPELINES_DIR=${PIPELINES_DIR}
       - RESET_PIPELINES_DIR=${RESET_PIPELINES_DIR}
       - PIPELINES_REQUIREMENTS_PATH=${PIPELINES_REQUIREMENTS_PATH}
