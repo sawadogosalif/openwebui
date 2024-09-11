@@ -1,10 +1,7 @@
 from typing import List, Union, Generator, Iterator
-from schemas import OpenAIChatMessage
 from pydantic import BaseModel
 import os
 import requests
-from dotenv import load_dotenv
-load_dotenv()
 
 class Pipeline:
     class Valves(BaseModel):
