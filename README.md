@@ -21,4 +21,4 @@
 ## Interface
 
 ![alt text](assets/pipeline.png)
-![alt text](assetS/chat.png)
+![alt text](assets/chat.png)
