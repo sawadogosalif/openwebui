@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -o kubernetes/
+    kompose.version: 1.31.2 (a92241f79)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: pipelines
+  name: pipelines
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: pipelines
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -o kubernetes/
+        kompose.version: 1.31.2 (a92241f79)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/openwebui-default: "true"
+        io.kompose.service: pipelines
+    spec:
+      containers:
+        - env:
+            - name: OPENAI_API_KEY
+            - name: PIPELINES_DIR
+            - name: PIPELINES_REQUIREMENTS_PATH
+            - name: PYTHONPATH
+              value: /app
+            - name: RESET_PIPELINES_DIR
+          image: ghcr.io/open-webui/pipelines:main
+          name: pipelines
+          ports:
+            - containerPort: 9099
+              hostPort: 9099
+              protocol: TCP
+          resources: {}
+          volumeMounts:
+            - mountPath: /app/pipelines
+              name: pipelines-claim0
+            - mountPath: /app/openwebui_utils
+              name: pipelines-claim1
+            - mountPath: /app/onepiece_bot
+              name: pipelines-claim2
+            - mountPath: /app/requirements_custom.txt
+              name: pipelines-claim3
+      restartPolicy: Always
+      volumes:
+        - name: pipelines-claim0
+          persistentVolumeClaim:
+            claimName: pipelines-claim0
+        - name: pipelines-claim1
+          persistentVolumeClaim:
+            claimName: pipelines-claim1
+        - name: pipelines-claim2
+          persistentVolumeClaim:
+            claimName: pipelines-claim2
+        - name: pipelines-claim3
+          persistentVolumeClaim:
+            claimName: pipelines-claim3
+status: {}
