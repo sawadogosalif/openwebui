@@ -1,37 +1,28 @@
-version: '3.8'
-
 services:
   open-webui:
-    pull_policy: always
-    image: ghcr.io/open-webui/open-webui:main # fix versio
+    image: ghcr.io/open-webui/open-webui:main
     container_name: open-webui
     volumes:
       - open-webui:/app/backend/data
-      - ./config.yaml:/app/backend/data/litellm/config.yaml  # Mount config.yaml
     ports:
       - ${OPEN_WEBUI_PORT-3000}:8080
     environment:
-      - 'WEBUI_SECRET_KEY='
-      - 'OPENAI_API_BASE_URL=http://pipelines:9099'
-      - 'OPENAI_API_KEY=0p3n-w3bu!'
-      - 'ENABLE_OLLAMA_API=false'
+      - WEBUI_SECRET_KEY=
+      - OPENAI_API_BASE_URL=http://pipelines:9099
+      - OPENAI_API_KEY=0p3n-w3bu!
+      - ENABLE_OLLAMA_API=false
     extra_hosts:
       - host.docker.internal:host-gateway
     restart: unless-stopped
 
   pipelines:
-    pull_policy: always
     image: ghcr.io/open-webui/pipelines:main
     container_name: pipelines
     volumes:
-      - pipelines:/app/pipelines
-      - openwebui_utils:/app/openwebui_utils
-
-      - ./chat_pipelines/pipelines:/app/pipelines # pipelines
-      - ./chat_pipelines/openwebui_utils:/app/openwebui_utils # pipelines utils
-      - .:/app/my_project/  # Mount the current directory to /app in the container
-      - .src/onepiece_bot/:/app/onepiece_bot  # the project 
-
+      - ./chat_pipelines/pipelines:/app/pipelines
+      - ./chat_pipelines/openwebui_utils:/app/openwebui_utils
+      - ./src/onepiece_bot:/app/onepiece_bot
+      - ./requirements.txt:/app/requirements_custom.txt
     extra_hosts:
       - host.docker.internal:host-gateway
     environment:
@@ -39,13 +30,10 @@ services:
       - PIPELINES_DIR=${PIPELINES_DIR}
       - RESET_PIPELINES_DIR=${RESET_PIPELINES_DIR}
       - PIPELINES_REQUIREMENTS_PATH=${PIPELINES_REQUIREMENTS_PATH}
-      - PYTHONPATH=/app  # Set PYTHONPATH to /app
-
+      - PYTHONPATH=/app
     restart: unless-stopped
     ports:
       - 9099:9099
 
 volumes:
-  open-webui: {}
-  pipelines: {}
-  openwebui_utils: {}
+  open-webui:

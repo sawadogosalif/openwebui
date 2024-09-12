@@ -17,3 +17,8 @@
 ## Ref :
 + https://zohaib.me/extending-openwebui-using-pipelines/
 + https://ikasten.io/2024/06/03/getting-started-with-openwebui-pipelines/
+
+## Interface
+
+![alt text](assets/pipeline.png)
+![alt text](assetS/chat.png)

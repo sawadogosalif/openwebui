@@ -3,13 +3,16 @@ from pydantic import BaseModel
 import os
 import requests
 
+
 class Pipeline:
     class Valves(BaseModel):
         OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "my-keys")  # Set default here
 
     def __init__(self):
-        self.name = "OpenAI Pipeline"
-        self.valves = self.Valves()  # No need to pass kwargs; default values handled by Pydantic.
+        self.name = "OpenAI Pipeline GPT3.5"
+        self.valves = (
+            self.Valves()
+        )  # No need to pass kwargs; default values handled by Pydantic.
 
     async def on_startup(self):
         """Called when the server starts."""
@@ -24,7 +27,7 @@ class Pipeline:
     ) -> Union[str, Generator, Iterator]:
         """
         Main pipeline method that processes user messages through the OpenAI API.
-        
+
         :param user_message: The message from the user.
         :param model_id: The ID of the model to use.
         :param messages: A list of message dictionaries.
@@ -39,10 +42,10 @@ class Pipeline:
 
         headers = {
             "Authorization": f"Bearer {self.valves.OPENAI_API_KEY}",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         }
         model = "gpt-3.5-turbo"
-        payload = {**body, "model":model}
+        payload = {**body, "model": model}
         self._clean_payload(payload)
 
         print(f"Payload: {payload}")
@@ -52,7 +55,7 @@ class Pipeline:
                 url="https://api.openai.com/v1/chat/completions",
                 json=payload,
                 headers=headers,
-                stream=body.get("stream", False)
+                stream=body.get("stream", False),
             )
             response.raise_for_status()
             return response.iter_lines() if body.get("stream") else response.json()

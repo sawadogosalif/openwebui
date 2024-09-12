@@ -1,64 +1,73 @@
-from typing import List, Union, Generator, Iterator
-from schemas import OpenAIChatMessage
+"""Simple pipeline -chatbot  onepiece ."""
+
+import os
+from typing import List, Union
 from pydantic import BaseModel
-import os
-import requests
-from dotenv import load_dotenv
-load_dotenv()
-import os
 from onepiece_bot.api import chatbot
-from openwebui_utils import get_last_user_message, get_last_assistant_message
+from onepiece_bot.adapters import OpenAIClient
 
 
 class Pipeline:
-    class Valves(BaseModel):
-        OPENAI_API_KEY: str = ""
-        pass
-
     def __init__(self):
-        # Optionally, you can set the id and name of the pipeline.
-        # Best practice is to not specify the id so that it can be automatically inferred from the filename, so that users can install multiple versions of the same pipeline.
-        # The identifier must be unique across all pipelines.
-        # The identifier must be an alphanumeric string that can include underscores or hyphens. It cannot contain spaces, special characters, slashes, or backslashes.
-        # self.id = "openai_pipeline"
-        self.name = "litellm Pipeline"
-        self.valves = self.Valves(
-            **{
-                "OPENAI_API_KEY": os.getenv(
-                    "OPENAI_API_KEY", "keys"
-                ),
-   	
-        )
-        pass
+        """
+        Initialize the pipeline with configuration settings from environment variables.
+        """
+        self.name = "litellm Pipeline OnePiece"
+        self.valves = self.Valves(OPENAI_API_KEY=os.getenv("OPENAI_API_KEY", "keys"))
+
+    class Valves(BaseModel):
+        """
+        Configuration settings for the pipeline, including API keys.
+        """
+
+        OPENAI_API_KEY: str
 
     async def on_startup(self):
-        # This function is called when the server is started.
-        print(f"on_startup:{__name__}")
-        pass
+        """
+        Actions to perform when the server starts.
+        """
+        print(f"Pipeline starting: {self.name}")
 
     async def on_shutdown(self):
-        # This function is called when the server is stopped.
-        print(f"on_shutdown:{__name__}")
-        pass
+        """
+        Actions to perform when the server stops.
+        """
+        print(f"Pipeline stopping: {self.name}")
 
     def pipe(
         self, user_message: str, model_id: str, messages: List[dict], body: dict
-    ) -> Union[str, Generator, Iterator]:
-        # This is where you can add your custom pipelines like RAG.
-        print(f"pipe:{__name__}")
+    ) -> Union[str, None]:
+        """
+        Process a pipeline request using the provided messages and model.
 
-        print(messages)
-        print(user_message)
+        Args:
+            user_message (str): The user's message.
+            model_id (str): The identifier for the model to use.
+            messages (List[dict]): A list of message dictionaries.
+            body (dict): Additional request body parameters.
 
-        OPENAI_API_KEY = self.valves.OPENAI_API_KEY
-        MODEL = "gpt-3.5-turbo"
+        Returns:
+            Union[str, None]: The response from the chatbot or an error message.
+        """
+        print(f"Processing request with model: {model_id}")
+        print("Messages:", messages)
 
-        user_message = get_last_user_message(messages)
-
+        api_key = self.valves.OPENAI_API_KEY
+        model_name = "gpt-3.5-turbo"
 
         try:
-    	    llm = OpenAIClient(api_key=OPENAI_API_KEY ,model_name=MODEL , model_params={"temperature": 0.7})
-	    response = chatbot(user_message , llm)
-	    retrun response
+            # Initialize the LLM client
+            llm_client = OpenAIClient(
+                api_key=api_key,
+                model_name=model_name,
+                model_params={"temperature": 0.7},
+            )
+
+            # Get the response from the chatbot
+            response = chatbot(messages, llm_client)
+
+            return response
         except Exception as e:
+            # Handle exceptions and provide error feedback
+            print(f"An error occurred: {e}")
             return f"Error: {e}"
