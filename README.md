@@ -13,7 +13,9 @@
    ```bash
    docker-compose --env-file default.env up -d
    ```
-
+## Update for mardown rendering to keep in mind 
+https://github.com/open-webui/pipelines/issues/270
+https://github.com/open-webui/open-webui/discussions/11083
 ## Ref :
 + https://zohaib.me/extending-openwebui-using-pipelines/
 + https://ikasten.io/2024/06/03/getting-started-with-openwebui-pipelines/
